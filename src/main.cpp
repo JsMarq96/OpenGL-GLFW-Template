@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "shader.h"
+#include "input_layer.h"
 
 #define WIN_WIDTH	640
 #define WIN_HEIGHT	480
@@ -29,18 +30,77 @@ void temp_error_callback(int error_code, const char* descr) {
 	std::cout << "GLFW Error: " << error_code << " " << descr << std::endl;
 }
 
-void temp_key_callback(GLFWwindow *wind, int key, int scancode, int action, int mods) {
+// INPUT MOUSE CALLBACk
+void key_callback(GLFWwindow *wind, int key, int scancode, int action, int mods) {
+	// ESC to close the game
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(wind, GL_TRUE);
 	}
 
-	std::cout << "Event with keycode: " << key  << action  << " " << scancode << " " << mods << std::endl; 
+	eKeyMaps pressed_key;
+	switch(key) {
+		case GLFW_KEY_W:
+			pressed_key = W_KEY;
+			break;
+		case GLFW_KEY_A:
+			pressed_key = A_KEY;
+			break;
+		case GLFW_KEY_S:
+			pressed_key = S_KEY;
+			break;
+		case GLFW_KEY_D:
+			pressed_key = D_KEY;
+			break;
+		case GLFW_KEY_UP:
+			pressed_key = UP_KEY;
+			break;
+		case GLFW_KEY_DOWN:
+			pressed_key = DOWN_KEY;
+			break;
+		case GLFW_KEY_RIGHT:
+			pressed_key = RIGHT_KEY;
+			break;
+		case GLFW_KEY_LEFT:
+			pressed_key = LEFT_KEY;
+			break;
+
+		sInputLayer *input = get_game_input_instance();
+		input->keyboard[pressed_key] = (action == GLFW_PRESS) ? KEY_PRESSED : KEY_RELEASED;
+	};
+
+
+}
+
+void mouse_button_callback(GLFWwindow *wind, int button, int action, int mods) {
+	char index;
+
+	switch (button) {
+	case GLFW_MOUSE_BUTTON_LEFT:
+		index = LEFT_CLICK;
+		break;
+
+	case GLFW_MOUSE_BUTTON_RIGHT:
+		index = RIGHT_CLICK;
+		break;
+
+	case GLFW_MOUSE_BUTTON_MIDDLE:
+		index = MIDDLE_CLICK;
+		break;
+	}
+
+	sInputLayer *input = get_game_input_instance();
+	input->mouse_clicks[index] = (action == GLFW_PRESS) ? KEY_PRESSED : KEY_RELEASED;
+}
+
+void cursor_enter_callback(GLFWwindow *window, int entered) {
+	sInputLayer *input = get_game_input_instance();
+	input->is_mouse_on_screen = entered;
 }
 
 void draw_loop(GLFWwindow *window) {
 	glfwMakeContextCurrent(window);
 
-	Shader demo_shader(vertex_shader, fragment_shader);
+	sShader demo_shader(vertex_shader, fragment_shader);
 	const float triangle_color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
 	const float clip_vertex[] = {
 		-1.0f, -1.0f, 0.0f,
@@ -61,9 +121,13 @@ void draw_loop(GLFWwindow *window) {
 
 	glBindVertexArray(0);
 
+	double prev_frame_time = glfwGetTime();
+	sInputLayer *input_state = get_game_input_instance();
+
 	while(!glfwWindowShouldClose(window)) {
 		// Draw loop
 		int width, heigth;
+		double temp_mouse_x, temp_mouse_y;
 		
 		glfwGetFramebufferSize(window, &width, &heigth);
 		// Set to OpenGL viewport size anc coordinates
@@ -72,6 +136,16 @@ void draw_loop(GLFWwindow *window) {
 		// OpenGL stuff
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
+
+		double curr_frame_time = glfwGetTime();
+		double elapsed_time = curr_frame_time - prev_frame_time;
+
+		// Mouse position control
+		glfwGetCursorPos(window, &temp_mouse_x, &temp_mouse_y);
+		input_state->mouse_speed_x = abs(input_state->mouse_pos_x - temp_mouse_x) * elapsed_time;
+		input_state->mouse_speed_y = abs(input_state->mouse_pos_y - temp_mouse_y) * elapsed_time;
+		input_state->mouse_pos_x = temp_mouse_x;
+		input_state->mouse_pos_y = temp_mouse_y;
 
 		demo_shader.activate();
 		demo_shader.set_uniform_vector("u_color", triangle_color);
@@ -94,7 +168,9 @@ int main() {
 
 	GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_NAME, NULL, NULL);
 
-	glfwSetKeyCallback(window, temp_key_callback);
+	glfwSetKeyCallback(window, key_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetCursorEnterCallback(window, cursor_enter_callback);
 
 	glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
