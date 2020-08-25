@@ -9,11 +9,10 @@
  * Basic OpenGL Shader Class, for shader's IO boilerplate
  * Juan S. Marquerie
 */
-class Shader {
-public:
+struct sShader {
     unsigned int ID;
 
-    Shader(const char* vertex_shader, const char* fragment_shader);
+    sShader(const char* vertex_shader, const char* fragment_shader);
 
     void activate();
     void deactivate();

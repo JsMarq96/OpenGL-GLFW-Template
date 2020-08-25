@@ -2,7 +2,7 @@
 #include <iostream>
 
 // To do: Show programming errors
-Shader::Shader(const char* vertex_shader_raw, 
+sShader::sShader(const char* vertex_shader_raw, 
                const char* fragment_shader_raw) {
     int vertex_id, fragment_id;
     int compile_successs;
@@ -51,30 +51,30 @@ Shader::Shader(const char* vertex_shader_raw,
     glDeleteShader(fragment_id);
 }
 
-void Shader::activate() {
+void sShader::activate() {
     glUseProgram(ID);
 }
 
-void Shader::deactivate() {
+void sShader::deactivate() {
     int i = 0;
 }
 
-void Shader::set_uniform(const char* name, 
+void sShader::set_uniform(const char* name, 
                         const float value) const {
     glUniform1f(glGetUniformLocation(ID, name), value);
 
 }
-void Shader::set_uniform(const char* name, 
+void sShader::set_uniform(const char* name, 
                         const int value) const {
     glUniform1i(glGetUniformLocation(ID, name), value);
 }
 
-void Shader::set_uniform(const char* name, 
+void sShader::set_uniform(const char* name, 
                         const bool value) const {
     glUniform1i(glGetUniformLocation(ID, name), (int) value);
 }
 
-void Shader::set_uniform_vector(const char* name,
+void sShader::set_uniform_vector(const char* name,
                         const float value[4]) const {
     glUniform4fv(glGetUniformLocation(ID, name), 1, value);
 }
