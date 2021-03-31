@@ -1,5 +1,5 @@
 #include <iostream>
-#include <glad/glad.h>
+#include <gl3w.h>
 #include <GLFW/glfw3.h>
 
 #include "shader.h"
@@ -173,13 +173,18 @@ int main() {
 	glfwSetCursorEnterCallback(window, cursor_enter_callback);
 
 	glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 	glfwSwapInterval(1);
-	
+
+	std::cout << "test" << std::endl;
 	if (!window) {
 		std::cout << "Error, could not create window" << std::endl; 
 	} else {
-		draw_loop(window);
+		if (gl3wInit()) {
+			draw_loop(window);
+		} else {
+			std::cout << "Cannot init gl3w" << std::endl;
+		}
+		
 	}
 
 	glfwDestroyWindow(window);

@@ -1,7 +1,7 @@
 #ifndef _SHADER_H_
 #define _SHADER_H_
 
-#include <glad/glad.h>
+#include <GL/gl3w.h>
 #include <stddef.h>
 #include <cassert>
 
