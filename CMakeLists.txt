@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
+
+SET(CMAKE_CXX_COMPILER g++)
+SET(CMAKE_C_COMPILER gcc)
+
 project(GL_GLFW_TEMPLATE)
 
 file(GLOB CPP_SOURCES "src/*.cpp")
