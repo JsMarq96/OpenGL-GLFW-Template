@@ -179,7 +179,7 @@ int main() {
 	if (!window) {
 		std::cout << "Error, could not create window" << std::endl; 
 	} else {
-		if (gl3wInit()) {
+		if (!gl3wInit()) {
 			draw_loop(window);
 		} else {
 			std::cout << "Cannot init gl3w" << std::endl;
