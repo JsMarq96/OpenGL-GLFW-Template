@@ -103,21 +103,32 @@ void draw_loop(GLFWwindow *window) {
 	sShader demo_shader(vertex_shader, fragment_shader);
 	const float triangle_color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
 	const float clip_vertex[] = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f,  1.0f, 0.0f,
+	   1.0f, 1.0f, 0.0f,
+	   1.0f, -1.0f, 0.0f,
+	   -1.0f, -1.0f, 0.0f,
+	   -1.0f, 1.0f, 0.0f
 	};
 
+	unsigned int indices[] = { 0, 1, 3, 1, 2, 3 };
+
 	// Send teh vertex to the GPU via Vertex Buffer Objects
-	unsigned int vbo, vao;
+	unsigned int vbo, vao, ebo;
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
+
 	glBindVertexArray(vao);
+
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(clip_vertex), clip_vertex, GL_STATIC_DRAW);
 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
 	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 
@@ -148,10 +159,11 @@ void draw_loop(GLFWwindow *window) {
 		input_state->mouse_pos_y = temp_mouse_y;
 
 		demo_shader.activate();
+		glBindVertexArray(vao);
 		demo_shader.set_uniform_vector("u_color", triangle_color);
 
-		glBindVertexArray(vbo);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -166,6 +178,10 @@ int main() {
 	// GLFW config
 	glfwSetErrorCallback(temp_error_callback);
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	
+	
 	GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_NAME, NULL, NULL);
 
 	glfwSetKeyCallback(window, key_callback);
