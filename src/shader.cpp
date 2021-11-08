@@ -144,11 +144,11 @@ void sShader::load_shaders(const char*   vertex_shader_raw,
     glDeleteShader(fragment_id);
 };
 
-void sShader::activate() {
+void sShader::activate() const {
     glUseProgram(ID);
 }
 
-void sShader::deactivate() {
+void sShader::deactivate() const {
     int i = 0;
 }
 
@@ -177,9 +177,17 @@ void sShader::set_uniform_vector(const char* name,
     glUniform4fv(glGetUniformLocation(ID, name), 1, value);
 }
 
+void sShader::set_uniform_vector(const char* name, const sVector4 value) const {
+    glUniform4fv(glGetUniformLocation(ID, name), 1, value.raw_values);
+}
+
 void sShader::set_uniform_matrix3(const char* name,
                                   const sMat33 *matrix) const {
     glUniformMatrix3fv(glGetUniformLocation(ID, name), 1, false, matrix->raw_values);
+}
+
+void sShader::set_uniform_matrix4(const char* name, const sMat44 *matrix) const {
+    glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, matrix->raw_values);
 }
 
 void sShader::set_uniform_matrix_array(const char* name,

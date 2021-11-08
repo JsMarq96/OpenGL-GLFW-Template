@@ -5,6 +5,11 @@
 #include "shader.h"
 #include "input_layer.h"
 
+// Dear IMGUI
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_impl_glfw.h"
+
 #define WIN_WIDTH	640
 #define WIN_HEIGHT	480
 #define WIN_NAME	"Test"
@@ -148,6 +153,10 @@ void draw_loop(GLFWwindow *window) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
 
+		ImGui_ImplOpenGL3_NewFrame();
+    	ImGui_ImplGlfw_NewFrame();
+    	ImGui::NewFrame();
+
 		double curr_frame_time = glfwGetTime();
 		double elapsed_time = curr_frame_time - prev_frame_time;
 
@@ -164,6 +173,10 @@ void draw_loop(GLFWwindow *window) {
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// ImGui
+		ImGui::Begin("Test");
+		ImGui::End();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -196,6 +209,14 @@ int main() {
 		std::cout << "Error, could not create window" << std::endl; 
 	} else {
 		if (!gl3wInit()) {
+			// IMGUI version
+			//IMGUI_CHECKVERSION();
+			ImGui::CreateContext();
+			ImGuiIO &io = ImGui::GetIO();
+			// Platform IMGUI
+			ImGui_ImplGlfw_InitForOpenGL(window, true);
+			ImGui_ImplOpenGL3_Init("#version 130");
+			ImGui::StyleColorsDark();
 			draw_loop(window);
 		} else {
 			std::cout << "Cannot init gl3w" << std::endl;
