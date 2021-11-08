@@ -4,7 +4,7 @@
 
 #ifndef MESH_RENDERER_H
 #define MESH_RENDERER_H
-
+#include <GL/gl3w.h>
 
 #include "shader.h"
 #include "mesh.h"

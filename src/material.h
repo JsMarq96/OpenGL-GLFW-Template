@@ -7,7 +7,7 @@
 
 //#include <stdlib.h>
 
-#include <GLES3/gl3.h>
+#include <GL/gl3w.h>
 
 #include "texture.h"
 #include "shader.h"
@@ -26,27 +26,24 @@ struct sMaterial {
     bool            enabled_textures[TEXTURE_TYPE_COUNT] = {false};
 
     sShader         shader;
+
+    void material_add_shader(const char     *vertex_shader,
+                             const char     *fragment_shader);
+
+    void material_add_texture(const char*          text_dir,
+                              const eTextureType   text_type);
+
+    void material_add_cubemap_texture(const char  *text_dir);
+
+    /**
+    * Binds the textures on Opengl
+    *  COLOR - Texture 0
+    *  NORMAL - Texture 1
+    *  SPECULAR - TEXTURE 2
+    * */
+    void material_enable();
+
+    void material_disable();
 };
-
-void material_add_shader(sMaterial      *mat,
-                         const char     *vertex_shader,
-                         const char     *fragment_shader);
-
-void material_add_texture(sMaterial            *mat,
-                          const char*          text_dir,
-                          const eTextureType   text_type);
-
-void material_add_cubemap_texture(sMaterial   *mat,
-                                  const char  *text_dir);
-
-/**
- * Binds the textures on Opengl
- *  COLOR - Texture 0
- *  NORMAL - Texture 1
- *  SPECULAR - TEXTURE 2
- * */
-void material_enable(const sMaterial   *mat);
-
-void material_disable(const sMaterial   *mat);
 
 #endif //QUEST_DEMO_MATERIAL_H
