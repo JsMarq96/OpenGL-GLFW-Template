@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "../utils/math.h"
+#include "math.h"
 
 struct sGlVertex {
     float x  = 0.0f;

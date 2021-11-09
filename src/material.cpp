@@ -42,9 +42,9 @@ void sMaterial::material_enable() {
         glBindTexture(GL_TEXTURE_2D, textures[texture].texture_id);
     }
 
-    shader.enable();
+    //shader.enable();
 }
 
 void sMaterial::material_disable() {
-    shader.disable();
+    //shader.disable();
 }

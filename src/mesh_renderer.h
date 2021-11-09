@@ -6,6 +6,7 @@
 #define MESH_RENDERER_H
 #include <GL/gl3w.h>
 
+#include "camera.h"
 #include "shader.h"
 #include "mesh.h"
 #include "math.h"
@@ -45,11 +46,13 @@ struct sInstancedMeshRenderer {
     const sMesh     *origin_mesh;
     int             indices_count = 0;
 
-    void init(const sMesh *raw_mesh, const bool is_static) {
+    void init(const sMesh *raw_mesh, const bool is_static);
+    void destroy();
 
-
-    };
-
+    void render_meshes(const sMat44    *model_mats,
+                       const int        model_count,
+                       const sCamera   &camera,
+                       const bool       show_wireframe);
 };
 
 #endif //MESH_RENDERER_H

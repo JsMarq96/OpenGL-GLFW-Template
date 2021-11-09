@@ -3,7 +3,6 @@
 //
 
 #include "texture.h"
-#include "../utils/common.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -39,7 +38,7 @@ void load_texture(sTexture  *text,
 
             raw_data = stbi_load(name_buffer, &w, &h, &l, 0);
 
-            info(" Load cubemap: %s %i %i %i", name_buffer, w, h, l);
+            //info(" Load cubemap: %s %i %i %i", name_buffer, w, h, l);
 
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                          0,

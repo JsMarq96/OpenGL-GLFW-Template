@@ -170,7 +170,6 @@ void draw_loop(GLFWwindow *window) {
 		demo_shader.activate();
 		glBindVertexArray(vao);
 		demo_shader.set_uniform_vector("u_color", triangle_color);
-
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -178,6 +177,8 @@ void draw_loop(GLFWwindow *window) {
 		ImGui::Begin("Test");
 		ImGui::End();
 
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

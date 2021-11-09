@@ -4,7 +4,9 @@
 
 #include "mesh_renderer.h"
 
-
+// =============================
+//  BASIC MESH RENDERING
+// =============================
 void sMeshRenderer::render_init(const sMesh    *raw_mesh,
                                 const bool      is_static) {
     origin_mesh = raw_mesh;
@@ -130,25 +132,30 @@ void sMeshRenderer::render_mesh(const sMat44        &model_mat,
 
     glBindVertexArray(VAO);
 
-    shader.enable();
+    shader.activate();
 
     shader.set_uniform_matrix4("u_model_mat", model_mat);
-    shader.set_uniform_matrix4("u_viewproj_mat", (sMat44*) &viewproj_mat);
+    shader.set_uniform_matrix4("u_viewproj_mat", viewproj_mat);
 
     // This does not really work...
     glDrawArrays((show_wireframe) ? GL_LINES : GL_TRIANGLES, 0, indices_count);
 
     std::cout << "Rendered mesh " << indices_count << " indexes" << std::endl;
 
-    rshader.disable();
+    shader.deactivate();
 
     glBindVertexArray(0);
 }
 
-void render_destroy(sMeshRenderer  *renderer) {
+void sMeshRenderer::render_destroy() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 
     // TODO: Delete shader
 }
+
+
+// ================================
+// INSTANCED MESH RENDERER
+// ===============================

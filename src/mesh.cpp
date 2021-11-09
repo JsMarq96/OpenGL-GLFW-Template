@@ -3,7 +3,6 @@
 //
 
 #include "mesh.h"
-#include "../utils/common.h"
 
 // NOTE: this only works for TRIANGLE ONLY meshes
 void
@@ -33,13 +32,13 @@ load_mesh(sMesh        *result,
         }
     }
 
-    info("v count: %i", v_count);
+    //info("v count: %i", v_count);
     // Allocate the memmory
     result->vertex_list = (sGlVertex*) malloc(sizeof(sGlVertex) * v_count);
     result->faces_index = (unsigned int*) malloc(sizeof(float) * f_count * 3);
     result->indices_cout = f_count * 3;
 
-    info("!!indices count %i vertex count : %i", result->indices_cout, v_count);
+    //info("!!indices count %i vertex count : %i", result->indices_cout, v_count);
 
     // Rewind and then load the data
     rewind(mesh_file);
