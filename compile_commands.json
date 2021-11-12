@@ -1,0 +1,224 @@
+[
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/imgui/imgui_demo.cpp.o",
+            "src/imgui/imgui_demo.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/imgui/imgui_demo.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/imgui/imgui_tables.cpp.o",
+            "src/imgui/imgui_tables.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/imgui/imgui_tables.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/imgui/imgui.cpp.o",
+            "src/imgui/imgui.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/imgui/imgui.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/imgui/imgui_draw.cpp.o",
+            "src/imgui/imgui_draw.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/imgui/imgui_draw.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/mesh.cpp.o",
+            "src/mesh.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/mesh.cpp"
+    },
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-I/",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-o",
+            "CMakeFiles/gl3w.dir/includes/GL/src/gl3w.c.o",
+            "includes/GL/src/gl3w.c"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "includes/GL/src/gl3w.c"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/shader.cpp.o",
+            "src/shader.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/shader.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/mesh_renderer.cpp.o",
+            "src/mesh_renderer.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/mesh_renderer.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/imgui/imgui_impl_glfw.cpp.o",
+            "src/imgui/imgui_impl_glfw.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/imgui/imgui_impl_glfw.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/texture.cpp.o",
+            "src/texture.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/texture.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/material.cpp.o",
+            "src/material.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/material.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/imgui/imgui_impl_opengl3.cpp.o",
+            "src/imgui/imgui_impl_opengl3.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/imgui/imgui_impl_opengl3.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/imgui/imgui_widgets.cpp.o",
+            "src/imgui/imgui_widgets.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/imgui/imgui_widgets.cpp"
+    },
+    {
+        "arguments": [
+            "c++",
+            "-c",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/GL",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/gl3w_dir",
+            "-I/home/js/Documents/OpenGL-GLFW-Template/includes/glfw/include",
+            "-g",
+            "-o",
+            "CMakeFiles/PROJECT.dir/src/main.cpp.o",
+            "src/main.cpp"
+        ],
+        "directory": "/home/js/Documents/OpenGL-GLFW-Template",
+        "file": "src/main.cpp"
+    }
+]
