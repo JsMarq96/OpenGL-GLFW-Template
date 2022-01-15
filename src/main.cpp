@@ -2,6 +2,10 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
+#include "math/vector.h"
+#include "mesh.h"
+#include "material.h"
+#include "mesh_renderer.h"
 #include "shader.h"
 #include "input_layer.h"
 
@@ -13,23 +17,6 @@
 #define WIN_WIDTH	640
 #define WIN_HEIGHT	480
 #define WIN_NAME	"Test"
-
-const char* vertex_shader = " \
-	#version 330 core \n\
-	layout(location = 0) in vec3 a_pos; \n\
-	void main() { \n\
-		gl_Position = vec4(a_pos, 1.0); \n\
-	\n} \
-";
-
-const char* fragment_shader = " \
-	#version 330 core \n\
-	layout(location = 0) out vec4 FragColor; \n\
-	uniform vec4 u_color; \n\
-	void main() { \n\
-	    FragColor = u_color; \n\
-	\n} \
-";
 
 void temp_error_callback(int error_code, const char* descr) {
 	std::cout << "GLFW Error: " << error_code << " " << descr << std::endl;
@@ -105,40 +92,36 @@ void cursor_enter_callback(GLFWwindow *window, int entered) {
 void draw_loop(GLFWwindow *window) {
 	glfwMakeContextCurrent(window);
 
-	sShader demo_shader(vertex_shader, fragment_shader);
-	const float triangle_color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
-	const float clip_vertex[] = {
-	   1.0f, 1.0f, 0.0f,
-	   1.0f, -1.0f, 0.0f,
-	   -1.0f, -1.0f, 0.0f,
-	   -1.0f, 1.0f, 0.0f
-	};
+	// Config scene
+	sCamera camera;
+	sVector3 camera_original_position = sVector3{2.0f, 2.60f, 2.0f};
+	camera.position = camera_original_position;
+	camera.look_at(sVector3{0.0f, 0.0f, 0.0f});
 
-	unsigned int indices[] = { 0, 1, 3, 1, 2, 3 };
+	// Complex material cube
+	sMeshRenderer cube_renderer;
+	sMesh cube_mesh;
+	cube_mesh.load_OBJ_mesh("resources/cube.obj");
+	cube_renderer.create_from_mesh(&cube_mesh);
 
-	// Send teh vertex to the GPU via Vertex Buffer Objects
-	unsigned int vbo, vao, ebo;
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
+	sMaterial cube_material;
+	cube_renderer.material.add_texture("resources/textures/normal.png", NORMAL_MAP);
+	cube_renderer.material.add_texture("resources/textures/color.png", COLOR_MAP);
+	cube_renderer.material.add_texture("resources/textures/rough.png", SPECULAR_MAP);
+	cube_renderer.material.add_shader("resources/shaders/pbr.vs", "resources/shaders/pbr.fs");
 
-	glBindVertexArray(vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(clip_vertex), clip_vertex, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
 
 	double prev_frame_time = glfwGetTime();
 	sInputLayer *input_state = get_game_input_instance();
+
+	sMat44 viewproj_mat = {};
+	sMat44 proj_mat = {};
+
+	sMat44 obj_model = {};
+	obj_model.set_identity();
+	obj_model.set_scale({1.0f, 1.0f, 1.f});
+
+	float camera_angle = 274.001f;
 
 	while(!glfwWindowShouldClose(window)) {
 		// Draw loop
@@ -149,9 +132,12 @@ void draw_loop(GLFWwindow *window) {
 		// Set to OpenGL viewport size anc coordinates
 		glViewport(0,0, width, heigth);
 
+		float aspect_ratio = (float) width / heigth;
+
 		// OpenGL stuff
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
+		glEnable(GL_DEPTH_TEST);
 
 		ImGui_ImplOpenGL3_NewFrame();
     	ImGui_ImplGlfw_NewFrame();
@@ -167,14 +153,22 @@ void draw_loop(GLFWwindow *window) {
 		input_state->mouse_pos_x = temp_mouse_x;
 		input_state->mouse_pos_y = temp_mouse_y;
 
-		demo_shader.activate();
-		glBindVertexArray(vao);
-		demo_shader.set_uniform_vector("u_color", triangle_color);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-
 		// ImGui
-		ImGui::Begin("Test");
+		ImGui::Begin("Scene control");
+
+		// Rotate the camera arround
+		if (ImGui::SliderFloat("Camera rotation", &camera_angle, 0.01f, 360.0f)) {
+			camera.position.x = (camera_original_position.x * cos(camera_angle / (180.0f / PI))) - (camera_original_position.z * sin(camera_angle/ (180.0f / PI)));
+			camera.position.z = (camera_original_position.z * sin(camera_angle/ (180.0f / PI))) + (camera_original_position.x * cos(camera_angle/ (180.0f / PI)));
+		}
+
+		ImGui::SliderFloat("Camera up-down", &camera.position.y, -3.01f, 8.0f);
+
+		camera.look_at({0.0f, 0.0f, 0.0f});
+		camera.get_perspective_viewprojection_matrix(90.0f, 1000.0f, 0.01f, aspect_ratio, &viewproj_mat);
+
+		cube_renderer.render(&obj_model, 1, viewproj_mat, false, camera);
+
 		ImGui::End();
 
 		ImGui::Render();
@@ -205,7 +199,6 @@ int main() {
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
-	std::cout << "test" << std::endl;
 	if (!window) {
 		std::cout << "Error, could not create window" << std::endl; 
 	} else {

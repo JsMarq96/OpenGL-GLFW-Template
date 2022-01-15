@@ -3,11 +3,15 @@
 //
 
 #include "texture.h"
+#include "gl3w.h"
+#include "glcorearb.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 void upload_simple_texture_to_GPU(sTexture *text);
+
+#include <iostream>
 
 void load_texture(sTexture  *text,
                   const bool is_cube_map,
@@ -17,7 +21,7 @@ void load_texture(sTexture  *text,
     text->is_cube_map = is_cube_map;
 
     if (is_cube_map) {
-        char *cubemap_terminations[] = {"right.jpg",
+        const char *cubemap_terminations[] = {"right.jpg",
                                         "left.jpg",
                                         "top.jpg",
                                         "bottom.jpg",
@@ -70,7 +74,6 @@ void load_texture(sTexture  *text,
     text->width = w;
     text->height = h;
 
-    if (!store_on_RAM) {
         assert(text->raw_data != NULL && "Uploading empty texture to GPU");
 
         glGenTextures(1, &text->texture_id);
@@ -79,22 +82,23 @@ void load_texture(sTexture  *text,
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glTexImage2D(GL_TEXTURE_2D,
                      0,
-                     GL_RGB,
+                     GL_RGBA,
                      w,
                      h,
                      0,
-                     GL_RGB,
+                     GL_RGBA,
                      GL_UNSIGNED_BYTE,
                      text->raw_data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        stbi_image_free(text->raw_data);
-    }
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+    stbi_image_free(text->raw_data);
 }
 
 void upload_simple_texture_to_GPU(sTexture *text) {

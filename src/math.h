@@ -16,6 +16,7 @@
 #include "math/dynamic_matrix.h"
 #include "math/quaternion.h"
 
+#define PI 3.141592
 #define SQRT12 0.7071067811865475244008443621048490f
 
 // TODO: cleanup a bit, its getting a bit messy bro

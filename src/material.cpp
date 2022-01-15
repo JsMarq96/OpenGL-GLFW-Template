@@ -3,15 +3,16 @@
 //
 
 #include "material.h"
+#include "glcorearb.h"
 
-void sMaterial::material_add_shader(const char     *vertex_shader,
+void sMaterial::add_shader(const char     *vertex_shader,
                                     const char     *fragment_shader) {
-    shader.load_shaders(vertex_shader,
+    shader.load_file_shaders(vertex_shader,
                              fragment_shader);
 }
 
-void sMaterial::material_add_texture(const char*           text_dir,
-                                     const eTextureType   text_type) {
+void sMaterial::add_texture(const char*           text_dir,
+                            const eTextureType   text_type) {
     enabled_textures[text_type] = true;
     load_texture(&textures[text_type],
                  false,
@@ -19,7 +20,7 @@ void sMaterial::material_add_texture(const char*           text_dir,
                  text_dir);
 }
 
-void sMaterial::material_add_cubemap_texture(const char   *text_dir) {
+void sMaterial::add_cubemap_texture(const char   *text_dir) {
     enabled_textures[COLOR_MAP] = true;
     load_texture(&textures[COLOR_MAP],
                  true,
@@ -33,18 +34,20 @@ void sMaterial::material_add_cubemap_texture(const char   *text_dir) {
  *  NORMAL - Texture 1
  *  SPECULAR - TEXTURE 2
  * */
-void sMaterial::material_enable() {
+void sMaterial::enable() const {
+    shader.activate();
+
     for (int texture = 0; texture < TEXTURE_TYPE_COUNT; texture++) {
         if (!enabled_textures[texture]) {
             continue;
         }
         glActiveTexture(GL_TEXTURE0 + texture);
         glBindTexture(GL_TEXTURE_2D, textures[texture].texture_id);
-    }
 
-    //shader.enable();
+        shader.set_uniform_texture(texture_uniform_LUT[texture], texture);
+    }
 }
 
-void sMaterial::material_disable() {
+void sMaterial::disable() const {
     //shader.disable();
 }

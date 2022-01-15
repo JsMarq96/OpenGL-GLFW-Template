@@ -1,80 +1,87 @@
-//
-// Created by jsmar on 21/05/2021.
-//
-
 #include "mesh.h"
+#include <cstdint>
 
-// NOTE: this only works for TRIANGLE ONLY meshes
-void
-load_mesh(sMesh        *result,
-          const char*   mesh_file_dir) {
+void sMesh::load_OBJ_mesh(const char* mesh_dir) {
     FILE *mesh_file;
     int mesh_file_size;
-    char *raw_mesh_file;
+    char *raw_mesh;
 
-    mesh_file = fopen(mesh_file_dir, "r");
+    mesh_file = fopen(mesh_dir, "r");
 
-    assert(mesh_file != NULL && "Failed to open the mesh");
+    assert(mesh_file != NULL && "Failed to open the mesh file");
 
-    // First gen the vertex/ faces count
-    int v_count = 0;
-    int f_count = 0;
-
-    int readed_chars;
+    // First coutn the faces & vertices
+    int read_chars;
     char *line_buffer = NULL;
     size_t len = 0;
-    while((readed_chars = getline(&line_buffer, &len, mesh_file)) != -1) {
-        if (line_buffer[0] == 'v' && line_buffer[1] == ' ') {
-            v_count++;
 
+    int uv_total_count = 0;
+    int normal_total_count = 0;
+    int vertex_total_count = 0;
+
+    while((read_chars = getline(&line_buffer, &len, mesh_file)) != -1) {
+        if (line_buffer[0] == 'v' && line_buffer[1] == ' ') {
+            vertex_total_count++;
         } else if (line_buffer[0] == 'f') {
-            f_count++;
+            face_count++;
+        } else if (line_buffer[0] == 'v' && line_buffer[1] == 't') {
+            uv_total_count++;
+        }else if (line_buffer[0] == 'v' && line_buffer[1] == 'n') {
+            normal_total_count++;
         }
     }
 
-    //info("v count: %i", v_count);
-    // Allocate the memmory
-    result->vertex_list = (sGlVertex*) malloc(sizeof(sGlVertex) * v_count);
-    result->faces_index = (unsigned int*) malloc(sizeof(float) * f_count * 3);
-    result->indices_cout = f_count * 3;
-
-    //info("!!indices count %i vertex count : %i", result->indices_cout, v_count);
-
-    // Rewind and then load the data
-    rewind(mesh_file);
+    vertices_index = (uint16_t*) malloc(face_count * 3 * sizeof(uint16_t));
+    face_normals = (sVector3*) malloc(face_count * sizeof(sVector3));
 
     struct sUV_Wrapper {
         float u;
         float v;
     };
 
-    int vertex_index = 0;
-    int uv_count = 0;
-    int faces_index = 0;
-    sUV_Wrapper *tmp_uvs = NULL;
+    sVector3 *temp_vertices = (sVector3*) malloc(vertex_total_count * sizeof(sVector3));
+    sVector3 *temp_normals = (sVector3*) malloc(normal_total_count * sizeof(sVector3));
+    sUV_Wrapper *tmp_uvs = (sUV_Wrapper*) malloc(sizeof(sUV_Wrapper) * (uv_total_count));
 
-    // Since the OBJs are stored in a sequential fashin, we can just get the
-    // number of indexes, and allocate stuff for the UVs, temporally store the UVs
-    // and merge everything while processing the faces
-    while((readed_chars = getline(&line_buffer, &len, mesh_file)) != -1) {
+
+    vertices = (sRawVertex*) malloc(face_count * 3 * sizeof(sRawVertex));
+
+    rewind(mesh_file);
+
+    int raw_vertex_index = 0;
+    int vertex_index = 0;
+    int normal_count = 0;
+    int half_edge_index = 0;
+    int uv_count = 0;
+    int face_index = 0;
+    int index_count = 0;
+
+    sKVStorage vertex_map;
+    vertex_map.init();
+
+    char tmp_edge_id[12] = {""};
+
+     while((read_chars = getline(&line_buffer, &len, mesh_file)) != -1) {
         if (line_buffer[0] == 'v' && line_buffer[1] == ' ') {
             float x, y, z;
             sscanf(line_buffer,"v %f %f %f\n",&x, &y, &z);
-            result->vertex_list[vertex_index].x = x;
-            result->vertex_list[vertex_index].y = y;
-            result->vertex_list[vertex_index].z = z;
+            temp_vertices[vertex_index].x = x;
+            temp_vertices[vertex_index].y = y;
+            temp_vertices[vertex_index].z = z;
             vertex_index++;
         } else if (line_buffer[0] == 'v' && line_buffer[1] == 't') {
-            if (uv_count == 0) {
-                tmp_uvs = (sUV_Wrapper*) malloc(sizeof(sUV_Wrapper) * (v_count));
-            }
             float u,v;
             sscanf(line_buffer, "vt %f %f\n", &u, &v);
 
             // Store the UVs by tuples
             tmp_uvs[uv_count].u = u;
-            tmp_uvs[uv_count].v =  1.f - v;
+            tmp_uvs[uv_count].v = 1.0f - v;
             uv_count++;
+        } else if (line_buffer[0] == 'v' && line_buffer[1] == 'n') {
+            sVector3 *curr_normal = &temp_normals[normal_count];
+            sscanf(line_buffer, "vn %f %f %f\n", &curr_normal->x, &curr_normal->y, &curr_normal->z);
+
+            normal_count++;
         } else if (line_buffer[0] == 'f') {
             int index1, index2, index3, normal1, normal2, normal3, uv1, uv2, uv3;
             sscanf(line_buffer,
@@ -95,109 +102,76 @@ load_mesh(sMesh        *result,
             uv1    -= 1;
             uv2    -= 1;
             uv3    -= 1;
+            normal1 -=1;
+            normal2 -=1;
+            normal3 -=1;
 
-            if (index2 == 0) {
-                int p = 0;
+            // Vertex 1
+            memset(tmp_edge_id, 0, 12);
+            get_key_of_vertex(index1, normal1, uv1, tmp_edge_id);
+            int vertex_id = vertex_map.get_int(tmp_edge_id, 12);
+            if (vertex_id == -1) {
+                vertices[vertex_count].vertex = temp_vertices[index1];
+                vertices[vertex_count].normal = temp_normals[normal1];
+                vertices[vertex_count].u = tmp_uvs[uv1].u;
+                vertices[vertex_count].v = tmp_uvs[uv1].v;
+                vertex_id = vertex_count;
+                vertex_map.add(tmp_edge_id, 12, vertex_count);
+                vertex_count++;
             }
+            vertices_index[indexing_count++] = vertex_id;
 
-            result->faces_index[faces_index++] = index1;
-            result->faces_index[faces_index++] = index2;
-            result->faces_index[faces_index++] = index3;
-
-            result->vertex_list[index1].u = tmp_uvs[uv1].u;
-            result->vertex_list[index1].v = tmp_uvs[uv1].v;
-
-            result->vertex_list[index2].u = tmp_uvs[uv2].u;
-            result->vertex_list[index2].v = tmp_uvs[uv2].v;
-
-            result->vertex_list[index3].u = tmp_uvs[uv3].u;
-            result->vertex_list[index3].v = tmp_uvs[uv3].v;
-
-            if (index2 == 0) {
-                int p = 0;
+            // Vertex 2
+            memset(tmp_edge_id, 0, 12);
+            get_key_of_vertex(index2, normal2, uv2, tmp_edge_id);
+            vertex_id = vertex_map.get_int(tmp_edge_id, 12);
+            if (vertex_id == -1) {
+                vertices[vertex_count].vertex = temp_vertices[index2];
+                vertices[vertex_count].normal = temp_normals[normal2];
+                vertices[vertex_count].u = tmp_uvs[uv2].u;
+                vertices[vertex_count].v = tmp_uvs[uv2].v;
+                vertex_id = vertex_count;
+                vertex_map.add(tmp_edge_id, 12, vertex_count);
+                vertex_count++;
             }
+            vertices_index[indexing_count++] = vertex_id;
+
+              // Vertex 3
+            memset(tmp_edge_id, 0, 12);
+            get_key_of_vertex(index3, normal3, uv3, tmp_edge_id);
+            vertex_id = vertex_map.get_int(tmp_edge_id, 12);
+            if (vertex_id == -1) {
+                vertices[vertex_count].vertex = temp_vertices[index3];
+                vertices[vertex_count].normal = temp_normals[normal3];
+                vertices[vertex_count].u = tmp_uvs[uv3].u;
+                vertices[vertex_count].v = tmp_uvs[uv3].v;
+                vertex_id = vertex_count;
+                vertex_map.add(tmp_edge_id, 12, vertex_count);
+                vertex_count++;
+            }
+            vertices_index[indexing_count++] = vertex_id;
+
+            // Compute the face normal
+            //face_normals[face_index].x = (temp_normals[normal1].x + temp_normals[normal2].x + temp_normals[normal3].x) / 3.0f;
+            //face_normals[face_index].y = (temp_normals[normal1].y + temp_normals[normal2].y + temp_normals[normal3].y) / 3.0f;
+            //face_normals[face_index].z = (temp_normals[normal1].z + temp_normals[normal2].z + temp_normals[normal3].z) / 3.0f;
+
+            face_index++;
         }
     }
 
+    free(temp_vertices);
+    free(line_buffer);
     free(tmp_uvs);
+    free(temp_normals);
 
     fclose(mesh_file);
-    result->vertex_count = vertex_index;
-    result->raw_vertex_size = vertex_index * 5;
-    result->uv_count = uv_count;
-};
-
-void
-load_cube_mesh(sMesh *result) {
-    float tmp_vertex[36 * 3] = {-1.0f,  1.0f, -1.0f,
-                           -1.0f, -1.0f, -1.0f,
-                           1.0f, -1.0f, -1.0f,
-                           1.0f, -1.0f, -1.0f,
-                           1.0f,  1.0f, -1.0f,
-                           -1.0f,  1.0f, -1.0f,
-
-                           -1.0f, -1.0f,  1.0f,
-                           -1.0f, -1.0f, -1.0f,
-                           -1.0f,  1.0f, -1.0f,
-                           -1.0f,  1.0f, -1.0f,
-                           -1.0f,  1.0f,  1.0f,
-                           -1.0f, -1.0f,  1.0f,
-
-                           1.0f, -1.0f, -1.0f,
-                           1.0f, -1.0f,  1.0f,
-                           1.0f,  1.0f,  1.0f,
-                           1.0f,  1.0f,  1.0f,
-                           1.0f,  1.0f, -1.0f,
-                           1.0f, -1.0f, -1.0f,
-
-                           -1.0f, -1.0f,  1.0f,
-                           -1.0f,  1.0f,  1.0f,
-                           1.0f,  1.0f,  1.0f,
-                           1.0f,  1.0f,  1.0f,
-                           1.0f, -1.0f,  1.0f,
-                           -1.0f, -1.0f,  1.0f,
-
-                           -1.0f,  1.0f, -1.0f,
-                           1.0f,  1.0f, -1.0f,
-                           1.0f,  1.0f,  1.0f,
-                           1.0f,  1.0f,  1.0f,
-                           -1.0f,  1.0f,  1.0f,
-                           -1.0f,  1.0f, -1.0f,
-
-                           -1.0f, -1.0f, -1.0f,
-                           -1.0f, -1.0f,  1.0f,
-                           1.0f, -1.0f, -1.0f,
-                           1.0f, -1.0f, -1.0f,
-                           -1.0f, -1.0f,  1.0f,
-                           1.0f, -1.0f,  1.0f
-    };
-    result->raw_vertex_list = (float *) malloc(sizeof(tmp_vertex));
-    memcpy(result->raw_vertex_list, tmp_vertex, sizeof(tmp_vertex));
-    result->raw_vertex_size = sizeof(tmp_vertex);
-    result->vertex_count = 36;
+    vertex_map.clean();
 }
 
 
-void
-mesh_destroy(sMesh *to_dispose) {
-    free(to_dispose->raw_vertex_list);
-    free(to_dispose->faces_index);
-};
-
-sVector3
-get_bounding_box_dimensions(const sMesh *mesh,
-                            const sVector3 scale) {
-    sVector3 max_shape{};
-
-    for(int i = 0; i < mesh->vertex_count; i++) {
-        max_shape.x = MAX(mesh->vertex_list[i].x, max_shape.x);
-        max_shape.y = MAX(mesh->vertex_list[i].y, max_shape.y);
-        max_shape.z = MAX(mesh->vertex_list[i].z, max_shape.z);
-    }
-
-    max_shape.x *= scale.x;
-    max_shape.y *= scale.y;
-    max_shape.z *= scale.z;
-
-    return max_shape;
+void sMesh::clean() {
+    free(vertices_index);
+    free(vertices);
+    free(face_normals);
 }

@@ -21,19 +21,21 @@ enum eTextureType : int {
     TEXTURE_TYPE_COUNT
 };
 
+const char texture_uniform_LUT[3][20] = { "u_albedo_map", "u_normal_map", "u_rough_map" };
+
 struct sMaterial {
     sTexture        textures[TEXTURE_TYPE_COUNT];
     bool            enabled_textures[TEXTURE_TYPE_COUNT] = {false};
 
     sShader         shader;
 
-    void material_add_shader(const char     *vertex_shader,
-                             const char     *fragment_shader);
+    void add_shader(const char     *vertex_shader,
+                    const char     *fragment_shader);
 
-    void material_add_texture(const char*          text_dir,
-                              const eTextureType   text_type);
+    void add_texture(const char*          text_dir,
+                     const eTextureType   text_type);
 
-    void material_add_cubemap_texture(const char  *text_dir);
+    void add_cubemap_texture(const char  *text_dir);
 
     /**
     * Binds the textures on Opengl
@@ -41,9 +43,9 @@ struct sMaterial {
     *  NORMAL - Texture 1
     *  SPECULAR - TEXTURE 2
     * */
-    void material_enable();
+    void enable() const;
 
-    void material_disable();
+    void disable() const;
 };
 
 #endif //QUEST_DEMO_MATERIAL_H

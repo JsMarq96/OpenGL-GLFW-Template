@@ -21,21 +21,16 @@ struct sCamera {
     float        zoom      = 0.059f;
 
     // TODO: initialize this and the view matrix code
-    sVector3    u;
-    sVector3    s;
-    sVector3    f;
+    sVector3    u = {};
+    sVector3    s = {};
+    sVector3    f = {};
 
-    sMat44 view_mat;
+    sMat44 view_mat = {};
 
     // View Port size
     int        vp_height  = 0.0f;
     int        vp_width   = 0.0f;
 
-    static sCamera*
-    shared_instance() {
-        static sCamera instance;
-        return &instance;
-    };
 
     // Orthografic projection is the only one by default
     void

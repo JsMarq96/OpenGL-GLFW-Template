@@ -181,6 +181,11 @@ void sShader::set_uniform_vector(const char* name, const sVector4 value) const {
     glUniform4fv(glGetUniformLocation(ID, name), 1, value.raw_values);
 }
 
+void sShader::set_uniform_vector(const char* name, const sVector3 value) const {
+    glUniform3fv(glGetUniformLocation(ID, name), 1, value.raw_values);
+}
+
+
 void sShader::set_uniform_matrix3(const char* name,
                                   const sMat33 &matrix) const {
     glUniformMatrix3fv(glGetUniformLocation(ID, name), 1, false, matrix.raw_values);
@@ -200,4 +205,9 @@ void sShader::set_uniform_integet_array(const char* name,
                                         const int *array,
                                         const int len) const {
     glUniform1iv(glGetUniformLocation(ID, name), len, array);
+}
+
+void sShader::set_uniform_texture(const char* name,
+                                  const int tex_spot) const {
+    glUniform1i(glGetUniformLocation(ID, name), tex_spot);
 }
