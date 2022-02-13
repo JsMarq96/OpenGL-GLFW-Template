@@ -7,6 +7,7 @@
 
 #include <GL/gl3w.h>
 #include <string.h>
+#include <cassert>
 
 #define DEFAULT_TEXT_FIDELITY 0
 
@@ -28,6 +29,9 @@ void load_texture(sTexture  *text,
                   const bool is_cube_map,
                   const bool store_on_RAM,
                   const char *texture_name);
+
+void store_texture(const sTexture *text,
+                   const char *name);
 
 void delete_texture(sTexture  *text);
 

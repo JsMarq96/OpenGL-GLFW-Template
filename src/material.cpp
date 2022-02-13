@@ -3,7 +3,9 @@
 //
 
 #include "material.h"
+#include "gl3w.h"
 #include "glcorearb.h"
+#include "texture.h"
 
 void sMaterial::add_shader(const char     *vertex_shader,
                                     const char     *fragment_shader) {
@@ -18,6 +20,42 @@ void sMaterial::add_texture(const char*           text_dir,
                  false,
                  false,
                  text_dir);
+}
+
+// TODO: this is kinda messy... refactor to sTexture??
+void sMaterial::add_raw_texture(const char* raw_data,
+                                const size_t width,
+                                const size_t height,
+                                const GLenum format,
+                                const GLenum type,
+                                const eTextureType text_type) {
+    enabled_textures[text_type] = true;
+
+    assert(raw_data != NULL && "Uploading empty texture to GPU");
+
+    sTexture *curr_texture = &textures[text_type];
+
+    glGenTextures(1, &curr_texture->texture_id);
+
+    glBindTexture(GL_TEXTURE_2D, curr_texture->texture_id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGBA,
+                 width, height,
+                 0,
+                 format,
+                 type,
+                 raw_data);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void sMaterial::add_cubemap_texture(const char   *text_dir) {

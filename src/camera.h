@@ -51,26 +51,18 @@ struct sCamera {
 
     void
     get_perspective_projection_matrix(const float FOV,
-                                      const float far,
-                                      const float near,
+                                      const float far_plane,
+                                      const float near_plane,
                                       const float aspect_ratio,
                                       sMat44  *result) const {
-        /*float scale = 1.0f / tan((FOV / 2.0f) * (M_PI / 180.f));
-        
-        result->set_identity();
-        result->sx1 = scale;
-        result->sy2 = scale;
-        result->sz3 = -far / (far-near);
-        result->tmp4 = 0.0f;
-        result->pz = -1.0f;
-        result->tmp3 = -(far * near)/(far-near);*/
       float tan_half_FOV = tan(to_radians(FOV) / 2.0f);
+
       result->set_identity();
       result->mat_values[0][0] = 1.0f / (aspect_ratio * tan_half_FOV);
       result->mat_values[1][1] = 1.0f / tan_half_FOV;
-      result->mat_values[2][2] = -(far + near) / (far - near);
+      result->mat_values[2][2] = -(far_plane + near_plane) / (far_plane - near_plane);
       result->mat_values[2][3] = -1.0f;
-      result->mat_values[3][2] = -(2.0f * far * near) / (far - near);
+      result->mat_values[3][2] = -(2.0f * far_plane * near_plane) / (far_plane - near_plane);
       result->mat_values[3][3] = 0.0f; 
     }
 
@@ -95,18 +87,36 @@ struct sCamera {
       view_mat.mat_values[3][2] = dot_prod(f, position); 
     }
 
+  void compute_view_matrix() {
+    s = cross_prod(f, sVector3{0.f, 1.0f, 0.0f}).normalize();
+      u = cross_prod(s, f);
+
+      view_mat.set_identity();
+      view_mat.mat_values[0][0] = s.x;
+      view_mat.mat_values[1][0] = s.y;
+      view_mat.mat_values[2][0] = s.z;
+      view_mat.mat_values[0][1] = u.x;
+      view_mat.mat_values[1][1] = u.y;
+      view_mat.mat_values[2][1] = u.z;
+      view_mat.mat_values[0][2] = -f.x;
+      view_mat.mat_values[1][2] = -f.y;
+      view_mat.mat_values[2][2] = -f.z;
+      view_mat.mat_values[3][0] = -dot_prod(s, position);
+      view_mat.mat_values[3][1] = -dot_prod(u, position);
+      view_mat.mat_values[3][2] = dot_prod(f, position);
+  }
+
     void
     get_perspective_viewprojection_matrix(const float FOV, 
-                                          const float far, 
-                                          const float near,
+                                          const float far_plane, 
+                                          const float near_plane,
                                           const float aspect_ratio,
                                           sMat44  *result) const {
       sMat44 tmp = {};
       memcpy(&tmp, &view_mat, sizeof(sMat44));
-      get_perspective_projection_matrix(FOV, far, near, aspect_ratio, result);
+      get_perspective_projection_matrix(FOV, far_plane, near_plane, aspect_ratio, result);
 
       result->multiply(&tmp);
-
       //memcpy(result, &tmp, sizeof(sMat44));
     }
 
@@ -118,6 +128,17 @@ struct sCamera {
 
         //get_projection_matrix(&(new_instance->ortho_matrix));
     }
+
+  void
+  set_rotation(const float pitch,
+               const float yaw) {
+    sVector3 dir = {};
+    dir.x = cos(radians(yaw)) * cos(radians(pitch));
+    dir.y = radians(pitch);
+    dir.z = sin(radians(yaw)) * cos(radians(pitch));
+
+    f = dir.normalize();
+  }
 };
 
 #endif // CAMERA_H_

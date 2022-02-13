@@ -2,6 +2,7 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
+#include "texture.h"
 #include "vector.h"
 #include "mesh.h"
 #include "material.h"

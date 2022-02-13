@@ -8,6 +8,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <stb_image_write.h>
 
 void upload_simple_texture_to_GPU(sTexture *text);
 
@@ -33,10 +34,11 @@ void load_texture(sTexture  *text,
 
         // Generate buffer based on teh biggest possible size, the bottom terminating png
         char *name_buffer = (char*) malloc(strlen(texture_name) + sizeof("bottom.png") + 1);
+
         unsigned char* raw_data = NULL;
         for(int i = 0; i < 6; i++) {
             int w, h, l;
-            memset(name_buffer, '\0', strlen(name_buffer));
+            memset(name_buffer, '\0', strlen(texture_name) + sizeof("bottom.png") + 1);
             strcat(name_buffer, texture_name);
             strcat(name_buffer, cubemap_terminations[i]);
 
@@ -100,6 +102,17 @@ void load_texture(sTexture  *text,
 
     stbi_image_free(text->raw_data);
 }
+
+/*
+void store_texture(const sTexture *text,
+                  const char *name) {
+    stbi_write_png(name,
+                   text->width,
+                   text->height,
+                   text->layers,
+                   text->raw_data,
+                   text->width * text->layers);
+}*/
 
 void upload_simple_texture_to_GPU(sTexture *text) {
 

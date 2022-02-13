@@ -6,7 +6,7 @@
 #include <cassert>
 #include <stdio.h>
 
-#include "math.h"
+#include <math.h>
 
 /**
  * Basic OpenGL Shader Class, for shader's IO boilerplate

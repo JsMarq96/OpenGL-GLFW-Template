@@ -74,13 +74,17 @@ void sSkyBoxRenderer::init(const char       *texture_dir) {
 
     glBindVertexArray(0);
 
+#ifdef _WIN32
+    skybox_material.shader.load_file_shaders("..\\resources\\shaders\\skybox.vs", "..\\resources\\shaders\\skybox.fs");
+#else
     skybox_material.shader.load_file_shaders("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
+#endif
 
     skybox_material.add_cubemap_texture(texture_dir);
 }
 
 void sSkyBoxRenderer::render(const sMat44        &viewproj_mat,
-                                const sCamera       &camera) const {
+                             const sCamera       &camera) const {
     glBindVertexArray(VAO);
     //glDepthFunc(GL_LEQUAL);
 

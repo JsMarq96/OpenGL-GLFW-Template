@@ -1,5 +1,59 @@
 #include "mesh.h"
-#include <cstdint>
+#include <stdio.h>
+
+#ifdef _WIN32
+/**
+ * Define the getline function on windows
+ * Source https://gist.github.com/jstaursky/84cf1ddf91716d31558d6f0b5afc3feb
+*/
+#include <stdlib.h>
+#include <errno.h>
+#include <stddef.h>
+
+typedef ptrdiff_t ssize_t;
+
+ssize_t
+getline(char** lineptr, /* input/output - storage address for input stream */
+    size_t* n,       /* input/output - string size in bytes */
+    FILE* stream) /* input - text stream */
+{
+    char* buffer_tmp, * position;
+    size_t   block, offset;
+    int      c;
+
+    if (!stream || !lineptr || !n) {
+        errno = EINVAL;
+        return -1;
+        /* Minimum length for strings is 2 bytes. */
+    }
+    else if (*lineptr == NULL || *n <= 1) {
+        *n = 128;
+        if (!(*lineptr = (char*) malloc(*n))) {
+            errno = ENOMEM;
+            return -1;
+        }
+    }
+    block = *n;
+    position = *lineptr;
+
+    while ((c = fgetc(stream)) != EOF \
+        && (*position++ = c) != '\n') {
+        offset = position - *lineptr; /* realloc doesn't guarantee it can keep '*lineptr' in same memory spot.
+                                       * so needs keep track of offset. */
+        if (offset >= *n) {
+            buffer_tmp = (char*) realloc(*lineptr, *n += block);
+            if (!buffer_tmp) { /* Do not free. Return *lineptr. */
+                errno = ENOMEM;
+                return -1;
+            }
+            *lineptr = buffer_tmp;
+            position = *lineptr + offset;
+        }
+    }
+    *position = '\0';
+    return (position - *lineptr - 1);
+}
+#endif
 
 void sMesh::load_OBJ_mesh(const char* mesh_dir) {
     FILE *mesh_file;
