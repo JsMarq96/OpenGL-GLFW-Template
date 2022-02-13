@@ -1,0 +1,6 @@
+[submodule "math"]
+	path = math
+	url = https://github.com/JsMarq96/math.git
+[submodule "glfw"]
+	path = glfw
+	url = https://github.com/glfw/glfw.git

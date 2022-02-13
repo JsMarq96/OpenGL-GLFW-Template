@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-cmake .
-intercept-build make
-make clean
-cd ..
+mkdir build
+cd build
+cmake ..
+make
