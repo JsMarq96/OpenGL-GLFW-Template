@@ -3,7 +3,8 @@
 
 #include <cstring>
 #include <cmath>
-#include "math.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 /**
  * Camera functions
@@ -12,20 +13,20 @@
 
 //
 struct sCurrentCameraInstance {
-    sMat44     ortho_matrix;
-    sVector3   position  = { 0.0f, 0.0f, 0.0f};
+    glm::mat4x4     ortho_matrix;
+    glm::vec3   position  = { 0.0f, 0.0f, 0.0f};
 };
 
 struct sCamera {
-    sVector3     position {0.0f, 0.0f, 0.0f};
+    glm::vec3     position {0.0f, 0.0f, 0.0f};
     float        zoom      = 0.059f;
 
     // TODO: initialize this and the view matrix code
-    sVector3    u = {};
-    sVector3    s = {};
-    sVector3    f = {};
+    glm::vec3    u = {};
+    glm::vec3    s = {};
+    glm::vec3    f = {};
 
-    sMat44 view_mat = {};
+    glm::mat4x4 view_mat = {};
 
     // View Port size
     int        vp_height  = 0.0f;
@@ -34,19 +35,19 @@ struct sCamera {
 
     // Orthografic projection is the only one by default
     void
-    get_ortho_projection_matrix(sMat44     *result) const {
-        result->set_identity();
+    get_ortho_projection_matrix(glm::mat4x4     *result) const {
+        glm::mat4 ortho = glm::mat4(1.0f);
 
         float left = (position.y -vp_width) * zoom / 2.0f;
         float right = (position.y + vp_width) * zoom / 2.0f;
         float bottom = (position.x -vp_height) * zoom / 2.0f;
         float top = (position.x + vp_height) * zoom / 2.0f;
 
-        result->mat_values[0][0] = 2.0f / (right - left);
-        result->mat_values[1][1] = 2.0f / (top - bottom);
-        result->mat_values[2][2] = -1.0f;
-        result->mat_values[3][0] = -(right + left) / (right - left);
-        result->mat_values[3][1] = -(top + bottom) / (top - bottom);
+        ortho[0][0] = 2.0f / (right - left);
+        ortho[1][1] = 2.0f / (top - bottom);
+        ortho[2][2] = -1.0f;
+        ortho[3][0] = -(right + left) / (right - left);
+        ortho[3][1] = -(top + bottom) / (top - bottom);
     };
 
     void
@@ -54,56 +55,28 @@ struct sCamera {
                                       const float far_plane,
                                       const float near_plane,
                                       const float aspect_ratio,
-                                      sMat44  *result) const {
-      float tan_half_FOV = tan(to_radians(FOV) / 2.0f);
-
-      result->set_identity();
-      result->mat_values[0][0] = 1.0f / (aspect_ratio * tan_half_FOV);
-      result->mat_values[1][1] = 1.0f / tan_half_FOV;
-      result->mat_values[2][2] = -(far_plane + near_plane) / (far_plane - near_plane);
-      result->mat_values[2][3] = -1.0f;
-      result->mat_values[3][2] = -(2.0f * far_plane * near_plane) / (far_plane - near_plane);
-      result->mat_values[3][3] = 0.0f; 
+                                      glm::mat4x4 *result) const {
+      *result = glm::perspective(FOV, aspect_ratio, far_plane, near_plane);
     }
 
     void
-    look_at(const sVector3 center) {
-      f = sVector3{center.x - position.x, center.y - position.y, center.z - position.z}.normalize();
-      s = cross_prod(f, sVector3{0.f, 1.0f, 0.0f}).normalize();
-      u = cross_prod(s, f);
+    look_at(const glm::vec3 &center) {
+      f = glm::normalize(glm::vec3{center.x - position.x, center.y - position.y, center.z - position.z});
+      s = glm::cross(f, glm::normalize(glm::vec3{0.f, 1.0f, 0.0f}));
+      u = glm::cross(s, f);
 
-      view_mat.set_identity();
-      view_mat.mat_values[0][0] = s.x;
-      view_mat.mat_values[1][0] = s.y;
-      view_mat.mat_values[2][0] = s.z;
-      view_mat.mat_values[0][1] = u.x;
-      view_mat.mat_values[1][1] = u.y;
-      view_mat.mat_values[2][1] = u.z;
-      view_mat.mat_values[0][2] = -f.x;
-      view_mat.mat_values[1][2] = -f.y;
-      view_mat.mat_values[2][2] = -f.z;
-      view_mat.mat_values[3][0] = -dot_prod(s, position);
-      view_mat.mat_values[3][1] = -dot_prod(u, position);
-      view_mat.mat_values[3][2] = dot_prod(f, position); 
+      view_mat = glm::lookAt(f,
+                             s,
+                             u);
     }
 
   void compute_view_matrix() {
-    s = cross_prod(f, sVector3{0.f, 1.0f, 0.0f}).normalize();
-      u = cross_prod(s, f);
+     s = glm::cross(f, glm::normalize(glm::vec3{0.f, 1.0f, 0.0f}));
+      u = glm::cross(s, f);
 
-      view_mat.set_identity();
-      view_mat.mat_values[0][0] = s.x;
-      view_mat.mat_values[1][0] = s.y;
-      view_mat.mat_values[2][0] = s.z;
-      view_mat.mat_values[0][1] = u.x;
-      view_mat.mat_values[1][1] = u.y;
-      view_mat.mat_values[2][1] = u.z;
-      view_mat.mat_values[0][2] = -f.x;
-      view_mat.mat_values[1][2] = -f.y;
-      view_mat.mat_values[2][2] = -f.z;
-      view_mat.mat_values[3][0] = -dot_prod(s, position);
-      view_mat.mat_values[3][1] = -dot_prod(u, position);
-      view_mat.mat_values[3][2] = dot_prod(f, position);
+      view_mat = glm::lookAt(f,
+                             s,
+                             u);
   }
 
     void
@@ -111,12 +84,10 @@ struct sCamera {
                                           const float far_plane, 
                                           const float near_plane,
                                           const float aspect_ratio,
-                                          sMat44  *result) const {
-      sMat44 tmp = {};
-      memcpy(&tmp, &view_mat, sizeof(sMat44));
+                                          glm::mat4x4  *result) const {
       get_perspective_projection_matrix(FOV, far_plane, near_plane, aspect_ratio, result);
 
-      result->multiply(&tmp);
+      *result = view_mat * *result;
       //memcpy(result, &tmp, sizeof(sMat44));
     }
 
@@ -132,12 +103,12 @@ struct sCamera {
   void
   set_rotation(const float pitch,
                const float yaw) {
-    sVector3 dir = {};
+    /*sVector3 dir = {};
     dir.x = cos(radians(yaw)) * cos(radians(pitch));
     dir.y = radians(pitch);
     dir.z = sin(radians(yaw)) * cos(radians(pitch));
 
-    f = dir.normalize();
+    f = dir.normalize(); */
   }
 };
 
