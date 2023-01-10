@@ -1,8 +1,9 @@
 #ifndef MESH_H_
 #define MESH_H_
 
-#include "math.h"
+#include <glm/glm.hpp>
 #include "kv_storage.h"
+#include <cstdint>
 
 inline void get_key_of_vertex(const uint16_t vertex,
                               const uint16_t normal,
@@ -24,10 +25,10 @@ inline void get_key_of_vertex(const uint16_t vertex,
 }
 
 struct sRawVertex {
-    sVector3 vertex = {0.0f, 0.0f, 0.0f};
+    glm::vec3 vertex = {0.0f, 0.0f, 0.0f};
     float u = 0.0f;
     float v = 0.0f;
-    sVector3 normal = {0.0f, 0.0f, 0.0f};
+    glm::vec3 normal = {0.0f, 0.0f, 0.0f};
 };
 
 struct sMesh {
@@ -39,9 +40,9 @@ struct sMesh {
 
     sRawVertex  *vertices     = NULL;
 
-    sVector3    *face_normals   = NULL;
+    glm::vec3    *face_normals   = NULL;
 
-    sVector3    *face_middle = NULL;
+    glm::vec3    *face_middle = NULL;
 
 
     void load_OBJ_mesh(const char* mesh_dir);

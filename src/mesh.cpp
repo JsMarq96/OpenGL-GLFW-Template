@@ -86,15 +86,15 @@ void sMesh::load_OBJ_mesh(const char* mesh_dir) {
     }
 
     vertices_index = (uint16_t*) malloc(face_count * 3 * sizeof(uint16_t));
-    face_normals = (sVector3*) malloc(face_count * sizeof(sVector3));
+    face_normals = (glm::vec3*) malloc(face_count * sizeof(glm::vec3));
 
     struct sUV_Wrapper {
         float u;
         float v;
     };
 
-    sVector3 *temp_vertices = (sVector3*) malloc(vertex_total_count * sizeof(sVector3));
-    sVector3 *temp_normals = (sVector3*) malloc(normal_total_count * sizeof(sVector3));
+    glm::vec3 *temp_vertices = (glm::vec3*) malloc(vertex_total_count * sizeof(glm::vec3));
+    glm::vec3 *temp_normals = (glm::vec3*) malloc(normal_total_count * sizeof(glm::vec3));
     sUV_Wrapper *tmp_uvs = (sUV_Wrapper*) malloc(sizeof(sUV_Wrapper) * (uv_total_count));
 
 
@@ -132,7 +132,7 @@ void sMesh::load_OBJ_mesh(const char* mesh_dir) {
             tmp_uvs[uv_count].v = 1.0f - v;
             uv_count++;
         } else if (line_buffer[0] == 'v' && line_buffer[1] == 'n') {
-            sVector3 *curr_normal = &temp_normals[normal_count];
+            glm::vec3 *curr_normal = &temp_normals[normal_count];
             sscanf(line_buffer, "vn %f %f %f\n", &curr_normal->x, &curr_normal->y, &curr_normal->z);
 
             normal_count++;
