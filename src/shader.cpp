@@ -176,28 +176,28 @@ void sShader::set_uniform_vector(const char* name,
     glUniform4fv(glGetUniformLocation(ID, name), 1, value);
 }
 
-void sShader::set_uniform_vector(const char* name, const sVector4 value) const {
-    glUniform4fv(glGetUniformLocation(ID, name), 1, value.raw_values);
+void sShader::set_uniform_vector(const char* name, const glm::vec4 &value) const {
+    glUniform4fv(glGetUniformLocation(ID, name), 1, &value[0]);
 }
 
-void sShader::set_uniform_vector(const char* name, const sVector3 value) const {
-    glUniform3fv(glGetUniformLocation(ID, name), 1, value.raw_values);
+void sShader::set_uniform_vector(const char* name, const glm::vec3 &value) const {
+    glUniform3fv(glGetUniformLocation(ID, name), 1, &value[0]);
 }
 
 
 void sShader::set_uniform_matrix3(const char* name,
-                                  const sMat33 &matrix) const {
-    glUniformMatrix3fv(glGetUniformLocation(ID, name), 1, false, matrix.raw_values);
+                                  const glm::mat3x3 &matrix) const {
+    glUniformMatrix3fv(glGetUniformLocation(ID, name), 1, false, &matrix[0][0]);
 }
 
-void sShader::set_uniform_matrix4(const char* name, const sMat44 &matrix) const {
-    glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, matrix.raw_values);
+void sShader::set_uniform_matrix4(const char* name, const glm::mat4x4 &matrix) const {
+    glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, &matrix[0][0]);
 }
 
 void sShader::set_uniform_matrix_array(const char* name,
-                                       const sMat33 *mat_arr,
+                                       const glm::mat3x3 *mat_arr,
                                        const int len) const {
-    glUniformMatrix3fv(glGetUniformLocation(ID, name), len, false, (mat_arr->raw_values));
+    glUniformMatrix3fv(glGetUniformLocation(ID, name), len, false, (float*) (mat_arr));
 }
 
 void sShader::set_uniform_integet_array(const char* name,

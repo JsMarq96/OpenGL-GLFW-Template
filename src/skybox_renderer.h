@@ -7,10 +7,11 @@
 
 #include <GL/gl3w.h>
 
+#include <glm/glm.hpp>
+
 #include "camera.h"
 #include "shader.h"
 #include "mesh.h"
-#include "math.h"
 #include "material.h"
 
 struct sSkyBoxRenderer {
@@ -23,7 +24,7 @@ struct sSkyBoxRenderer {
 
     void init(const char       *texture_dir);
 
-    void render(       const sMat44        &viewproj_mat,
+    void render(       const glm::mat4x4        &viewproj_mat,
                        const sCamera       &camera) const;
 
     void destroy();

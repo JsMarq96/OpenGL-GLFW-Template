@@ -2,8 +2,9 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+
 #include "texture.h"
-#include "vector.h"
 #include "mesh.h"
 #include "material.h"
 #include "mesh_renderer.h"
@@ -18,6 +19,8 @@
 #define WIN_WIDTH	640
 #define WIN_HEIGHT	480
 #define WIN_NAME	"Test"
+
+#define PI 3.14159265359f
 
 void temp_error_callback(int error_code, const char* descr) {
 	std::cout << "GLFW Error: " << error_code << " " << descr << std::endl;
@@ -95,9 +98,9 @@ void draw_loop(GLFWwindow *window) {
 
 	// Config scene
 	sCamera camera;
-	sVector3 camera_original_position = sVector3{2.0f, 2.60f, 2.0f};
+	glm::vec3 camera_original_position = glm::vec3{2.0f, 2.60f, 2.0f};
 	camera.position = camera_original_position;
-	camera.look_at(sVector3{0.0f, 0.0f, 0.0f});
+	camera.look_at(glm::vec3{0.0f, 0.0f, 0.0f});
 
 	// Complex material cube
 	sMeshRenderer cube_renderer;
@@ -115,12 +118,12 @@ void draw_loop(GLFWwindow *window) {
 	double prev_frame_time = glfwGetTime();
 	sInputLayer *input_state = get_game_input_instance();
 
-	sMat44 viewproj_mat = {};
-	sMat44 proj_mat = {};
+	glm::mat4x4 viewproj_mat = {};
+	glm::mat4x4 proj_mat = {};
 
-	sMat44 obj_model = {};
-	obj_model.set_identity();
-	obj_model.set_scale({1.0f, 1.0f, 1.f});
+	glm::mat4x4 obj_model = {};
+	//obj_model.set_identity();
+	//obj_model.set_scale({1.0f, 1.0f, 1.f});
 
 	float camera_angle = 274.001f;
 

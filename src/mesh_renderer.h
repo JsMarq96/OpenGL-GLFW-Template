@@ -1,6 +1,8 @@
 #ifndef MESH_RENDERER_H_
 #define MESH_RENDERER_H_
 
+#include <glm/glm.hpp>
+
 #include "gl3w.h"
 #include "glcorearb.h"
 #include "shader.h"
@@ -56,9 +58,9 @@ struct sMeshRenderer {
         glBindVertexArray(0);
     }
 
-    void render(const sMat44 *models,
+    void render(const glm::mat4x4 *models,
                 const int count,
-                const sMat44 &view_proj,
+                const glm::mat4x4 &view_proj,
                 const bool show_wireframe,
                 const sCamera &camera) const {
 

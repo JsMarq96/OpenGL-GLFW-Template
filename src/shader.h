@@ -6,7 +6,7 @@
 #include <cassert>
 #include <stdio.h>
 
-#include <math.h>
+#include <glm/glm.hpp>
 
 /**
  * Basic OpenGL Shader Class, for shader's IO boilerplate
@@ -30,11 +30,11 @@ struct sShader {
     void set_uniform(const char* name, const bool value) const;
     void set_uniform_vector2D(const char* name, const float value[2]) const;
     void set_uniform_vector(const char* name, const float value[4]) const;
-    void set_uniform_vector(const char* name, const sVector4 value) const;
-    void set_uniform_vector(const char* name, const sVector3 value) const;
-    void set_uniform_matrix3(const char* name, const sMat33 &matrix) const;
-    void set_uniform_matrix4(const char* name, const sMat44 &matrix) const;
-    void set_uniform_matrix_array(const char* name, const sMat33 *mat_arr, const int len) const;
+    void set_uniform_vector(const char* name, const glm::vec4 &value) const;
+    void set_uniform_vector(const char* name, const glm::vec3 &value) const;
+    void set_uniform_matrix3(const char* name, const glm::mat3x3 &matrix) const;
+    void set_uniform_matrix4(const char* name, const glm::mat4x4 &matrix) const;
+    void set_uniform_matrix_array(const char* name, const glm::mat3x3 *mat_arr, const int len) const;
     void set_uniform_integet_array(const char* name, const int *array, const int len) const;
 
     // Samplers / textures

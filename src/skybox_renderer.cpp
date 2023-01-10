@@ -3,6 +3,7 @@
 //
 
 #include "skybox_renderer.h"
+#include "glm/ext/matrix_transform.hpp"
 #include <GL/gl3w.h>
 
 
@@ -83,7 +84,7 @@ void sSkyBoxRenderer::init(const char       *texture_dir) {
     skybox_material.add_cubemap_texture(texture_dir);
 }
 
-void sSkyBoxRenderer::render(const sMat44        &viewproj_mat,
+void sSkyBoxRenderer::render(const glm::mat4x4        &viewproj_mat,
                              const sCamera       &camera) const {
     glBindVertexArray(VAO);
     //glDepthFunc(GL_LEQUAL);
@@ -92,9 +93,7 @@ void sSkyBoxRenderer::render(const sMat44        &viewproj_mat,
 
     skybox_material.enable();
 
-    sMat44 model = {};
-    model.set_identity();
-    model.set_position(camera.position);
+    glm::mat4x4 model = glm::translate(glm::mat4x4(1.0f), camera.position);
 
     // TODO: This part is kinda yuck yuck bro...
     skybox_material.shader.set_uniform_matrix4("u_model_mat", model);
