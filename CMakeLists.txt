@@ -11,11 +11,10 @@ file(GLOB C_SOURCES "src/*.c")
 file(GLOB C_SUBFOLDER_SOURCES "src/**/*.c")
 set(includes_dir "includes/")
 
-set(math_lib_dir "math/")
-
 add_executable(GL_GLFW_TEMPLATE WIN32 ${CPP_SOURCES} ${CPP_SUBFOLDER_SOURCES} ${C_SOURCES} ${C_SUBFOLDER_SOURCES})
 
-target_include_directories(GL_GLFW_TEMPLATE PRIVATE "math/")
+add_subdirectory(glm)
+target_link_libraries(GL_GLFW_TEMPLATE glm)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -40,7 +39,6 @@ endif()
 endif()
 
 include_directories(
-  math_lib_dir
   includes
   gl3w_dir
  )
